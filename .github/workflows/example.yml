@@ -1,0 +1,154 @@
+---
+## the name of your workflow. 
+
+## you can add multiple YAML files in this directory and have them picked up. Note, the YAML must first be pushed to `main` branch then you can branch off and do custom 
+## testing
+name: "example"
+
+on:
+  ## event triggers to kick of your workflow/pipeline whenever a specific GitHub activity happens.
+  ## For specifics and detailed info, see: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+  push:
+    branches: ["main"]
+  
+  ## manually trigger your workflow. User or "the thing" triggering must pass in any required inputs so that they can be fed to the job appropriately.
+  ##        example: 
+  ##          1. userA runs workflow from GitHub UI
+  ##          2. userB runs workflow from GitHub CLI or API call
+  ##
+  ## For more info, see: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#onworkflow_dispatchinputs
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'The destination region to work in'
+        required: true
+        default: 'us-east-1'
+        type: choice ## there are a few different TYPES you can choose from
+        options:
+          - 'us-east-1'
+          - 'eu-west-1'
+      environment:
+        description: 'The environment to deploy to'
+        required: true
+        default: 'devint' ## this field is not required but a nice-to-have
+        type: choice
+        options:
+          - 'devint'
+          - 'qa'
+          - 'uat'
+          - 'prod'
+
+
+## https://docs.github.com/en/actions/learn-github-actions/environment-variables
+## keep an eye out for the proper spelling. the word `inputs` is plural not singular. Big gotcha
+## some sections of this file will NOT accept variables defined under `env:` so you'll be forced to use `"${{ github.event.inputs.region }}" for example`
+env:
+  REGION: "${{ github.event.inputs.region }}" ## user input from above
+  ENVIRONMENT: "${{ github.event.inputs.environment }}" ## user input from above
+  ROLE: "${{ secrets.DESTINATION_ASSUME_ROLE }}" ## setting environment variable pulling from GitHub repository secret
+  NODE_VERSION: "14"
+
+## when workflow/pipeline runs, make sure the shell is using Bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  ingestData: ## name of your job. It can be anything. Think in terms of "terraform `INIT`, `PLAN`, `APPLY`. Or if you need to produce an artifact to copy over to another job
+
+    ## you can define a k8s cluster "tag" here so that all jobs use your private GitHub runner. 
+    ## NOTE, this requires more setup. Asurion has something like `common-4gb` which is fine but think about your CICD pipeline data potentially
+    ## being exposed on a shared runner across ALL Asurion teams. No bueno :( 
+    ## SBX DevOps would use something like `runs-on: ['nonprod-sbx-us-east-1']` for example
+    runs-on: ['self-hosted']
+
+    ## this is the name you'll see in the GitHub UI
+    ## if you setup branch rules, this is the name that'll show up too.
+    name: ingestData
+
+    ## when the pipeline runs, which "environment" should you use? Environment in this case is GitHub repository environment.
+    ## think about building a Tomcat RPM then deploying it to devint, qa, uat and prod. The code should probably be deployed as identical as possible so this is where that comes in
+    ## https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment
+    ## https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-an-environment
+    environment: "${{ github.event.inputs.environment }}"
+
+    ## now start defining the steps for the job called "ingestData"
+    steps:
+      - name: "Checkout Repo" ## this line is not required. You can put double quotes, single quotes or no quotes. I usually put double quotes in case I want to pass a variable into the name
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.ref }}" ## https://docs.github.com/en/actions/learn-github-actions/contexts
+          fetch-depth: 0 
+
+      - name: "Install Node version ${{ github.event.inputs.NODE_VERSION }}" ## using `${{ env.NODE_VERSION }}` won't work here. :(
+        uses: actions/setup-node@v2
+        with:
+          node-version: "${{ env.NODE_VERSION }}"
+
+  pr_comment:
+    runs-on: ['self-hosted']
+    name: deploy
+    if: "${{ github.event.issue.pull_request }}" ## only run on pull requests
+
+    ## the next block of code is me referencing a repo from Artifactory then 
+    ## always injecting a service account token and IAM role ARN as environment variables
+    ## I always wanted to mount a volume as well so that'll be there for any/all future runs
+    # container:
+    #   image: <insert_artifactory_repo>/MyCustomNodeJSImage:latest
+    #   env:
+    #     AWS_WEB_IDENTITY_TOKEN_FILE: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+    #     AWS_ROLE_ARN: "arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/${{ secrets.RUNNER_ROLE_NAME }}"
+    #   volumes:
+    #     - /var/run/secrets/eks.amazonaws.com/serviceaccount/token:/var/run/secrets/eks.amazonaws.com/serviceaccount/token
+
+    environment: "${{ github.event.inputs.environment || 'devint' }}" ## inject user input otherwise default to devint.
+    steps:
+      - run: | ## notice `name` is not defined here
+          echo "this is a comment ${NUMBER}"
+        env: ## an environment variable that is tied solely to this one step
+          NUMBER: "${{ github.event.issue.number }}" ## purposely did not add this to the top but it would be under workflow_dispatch
+
+  ## post workflow notifications to private Slack channel.
+  # slack_notify:
+  #   runs-on: "${{ github.event.inputs.CLUSTER_NAME || 'nonprod-sbx-us-east-1' }}"
+  #   needs: [ "build_and_deploy" ]
+  #   container:
+  #     image: "docker.artifactory.entarch.prd.aws.asurion.net/sb-sbx-devops/nodejs-base:14-alpine3.13"
+  #   name: "Slack Notifications"
+  #   env:
+  #     SLACK_WEBHOOK_URL: "${{ secrets.SLACK_WEBHOOK_URL }}"
+  #   steps:
+  #   - name: "Checkout asurion-private/pse-action-slack"
+  #     uses: actions/checkout@v3
+  #     with:
+  #       repository: "asurion-private/pse-action-slack"
+  #       token: "${{ secrets.JM_PAT }}"
+
+  #   - name: "Send a notification via Slack"
+  #     uses: "./.github/actions/notify"
+  #     with:
+  #       channel: '#sbx-cloudsupport-private'
+  #       status: "${{ job.status }}"
+  #       custom_msg: "*`sbx-terraform-ssm` workflow executed:* 🚀\n\n*Terraform Version:* `${{ env.TF_VERSION }}`\n*Terraform Action:* `${{ env.ACTION }}`\n*Environment:* `${{ env.ENVIRONMENT }}`\n*Region:* `${{ env.REGION }}`\n*Subsystem:* `${{ env.SUBSYSTEM }}`\n"
+  #     if: always()
+
+
+
+
+
+
+
+
+
+
+## other helpful links:
+## https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+## https://fusebit.io/blog/first-nodejs-github-action/?utm_source=www.google.com&utm_medium=referral&utm_campaign=none
+## https://github.com/actions/toolkit
+## https://stackoverflow.com/questions/59191913/how-do-i-get-the-output-of-a-specific-step-in-github-actions
+## https://docs.github.com/en/actions/creating-actions/creating-a-composite-action
+
+
+## https://enterprise-confluence.asurion.com/display/DASH/How+to+use+DASH+API
+## https://enterprise-confluence.asurion.com/display/DASH/How+to+Use+Self-Hosted+Runners
+## https://enterprise-confluence.asurion.com/display/DASH/How+to+Use+Github+Actions
