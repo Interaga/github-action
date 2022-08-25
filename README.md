@@ -9,5 +9,6 @@ Example 1:
    `.github/workflows/example.yml`
 
 Example 2:
-   - See my Terraform example repo ( https://github.com/asurion-private/pse-action-terraform ) 
+   - See my Terraform example repo ( https://github.com/asurion-private/pse-action-terraform ). It'll have a more end-to-end test for a good visual 
+   
    - You can search for `pse-action` under Asurion private org to see other examples
