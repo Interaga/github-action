@@ -9575,7 +9575,7 @@ async function run() {
 
   try {
     const githubToken = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("githubToken");
-    console.log("githubToken", githubToken.slice(0, 1) + githubToken.slice(-1));
+    // console.log("githubToken", githubToken.slice(0, 1) + githubToken.slice(-1));
     const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit(githubToken);
 
     // Get the JSON webhook payload for the event that triggered the workflow

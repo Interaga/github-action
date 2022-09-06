@@ -4,7 +4,9 @@ inputs:
   githubToken: # token for action to access repo
     description: "The token of this workflow granting access to the repo"
     requred: true
-    default: false
+  repository:
+    description: 'The full name of the repository containing the issue or pull request.'
+    default: ${{ github.repository }}
 outputs:
   success: # boolean
     description: "Whether this job ran successfully"
