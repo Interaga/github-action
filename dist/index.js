@@ -9596,9 +9596,10 @@ async function run() {
     console.log("parameters", parameters);
 
     for await (const comments of octokit.paginate.iterator(octokit.rest.issues.listComments, parameters)) {
-      comments.forEach((comment) => {
-        console.log("COMMENT: ", comment);
-      });
+      console.log("comments:", typeof comments, comments);
+      // comments.forEach((comment) => {
+      //   console.log("COMMENT: ", comment);
+      // });
     }
   } catch (error) {
     console.log(error);
