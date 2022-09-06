@@ -1,0 +1,24 @@
+{
+  "name": "github-action",
+  "version": "0.0.1",
+  "description": "This is the repo housing the github action triggered by dev team repos",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build index.js --license licenses.txt"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/richardpickett/github-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/richardpickett/github-action/issues"
+  },
+  "homepage": "https://github.com/richardpickett/github-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.9.1",
+    "@actions/github": "^5.0.3"
+  }
+}
