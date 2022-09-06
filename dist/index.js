@@ -9574,16 +9574,16 @@ async function run() {
   var success = true;
 
   try {
-    const issue = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("issue");
     const githubToken = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("githubToken");
+    console.log("githubToken", githubToken);
     const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_1__.getOctokit(githubToken);
-    console.log("the issue passed by the workflow:", JSON.stringify(issue, undefined, 2));
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = _actions_github__WEBPACK_IMPORTED_MODULE_1__.context.payload;
-    console.log("The event payload:", JSON.stringify(payload, undefined, 2));
+    // console.log("The event payload:", JSON.stringify(payload, undefined, 2));
 
     const repository = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("repository");
+    console.log("repository", repository);
     const [owner, repo] = repository.split("/");
 
     // get the issue and walk through the comments
@@ -9599,6 +9599,7 @@ async function run() {
       });
     }
   } catch (error) {
+    console.log(error);
     success = false;
     _actions_core__WEBPACK_IMPORTED_MODULE_0__.setFailed(error.message);
   }

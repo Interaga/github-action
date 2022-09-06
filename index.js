@@ -15,16 +15,16 @@ async function run() {
   var success = true;
 
   try {
-    const issue = core.getInput("issue");
     const githubToken = core.getInput("githubToken");
+    console.log("githubToken", githubToken);
     const octokit = github.getOctokit(githubToken);
-    console.log("the issue passed by the workflow:", JSON.stringify(issue, undefined, 2));
 
     // Get the JSON webhook payload for the event that triggered the workflow
     const payload = github.context.payload;
-    console.log("The event payload:", JSON.stringify(payload, undefined, 2));
+    // console.log("The event payload:", JSON.stringify(payload, undefined, 2));
 
     const repository = core.getInput("repository");
+    console.log("repository", repository);
     const [owner, repo] = repository.split("/");
 
     // get the issue and walk through the comments
@@ -40,6 +40,7 @@ async function run() {
       });
     }
   } catch (error) {
+    console.log(error);
     success = false;
     core.setFailed(error.message);
   }
