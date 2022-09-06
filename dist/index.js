@@ -9681,7 +9681,7 @@ try {
   success = false;
   core.setFailed(error.message);
 }
-core.setOutput("success", time);
+core.setOutput("success", success);
 
 })();
 
