@@ -31,7 +31,7 @@ async function run() {
     const parameters = {
       owner,
       repo,
-      issue_number: payload.issue.id,
+      issue_number: payload.issue.number,
     };
 
     console.log("parameters", parameters);
