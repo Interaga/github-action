@@ -34,6 +34,8 @@ async function run() {
       issue_number: payload.issue.id,
     };
 
+    console.log("parameters", parameters);
+
     for await (const comments of octokit.paginate.iterator(octokit.rest.issues.listComments, parameters)) {
       comments.forEach((comment) => {
         console.log("COMMENT: ", comment);
