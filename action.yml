@@ -1,13 +1,17 @@
-name: 'Threat Model'
-description: 'Update plextrac with the latest details if this issue/pr is labeled as threat model'
+name: "Threat Model"
+description: "Update plextrac with the latest details if this issue/pr is labeled as threat model"
 inputs:
-  issue:  # issue Object
-    description: 'The issue triggering this workflow'
+  issue: # issue Object
+    description: "The issue triggering this workflow"
     required: true
+    default: false
+  githubToken: # token for action to access repo
+    description: "The token of this workflow granting access to the repo"
+    requred: true
     default: false
 outputs:
   success: # boolean
-    description: 'Whether this job ran successfully'
+    description: "Whether this job ran successfully"
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"
