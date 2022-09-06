@@ -1,8 +1,9 @@
 {
   "name": "github-action",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "This is the repo housing the github action triggered by dev team repos",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "ncc build index.js --license licenses.txt"
   },
