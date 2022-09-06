@@ -231,3 +231,34 @@ The event payload: {
     "url": "https://api.github.com/users/richardpickett"
   }
 }```
+
+``` JSON
+data: [{
+      "url": 'https://api.github.com/repos/richardpickett/github-dev/issues/comments/1238635946',
+      "html_url": 'https://github.com/richardpickett/github-dev/issues/1#issuecomment-1238635946',
+      "issue_url": 'https://api.github.com/repos/richardpickett/github-dev/issues/1',
+      "id": 1238635946,
+      "node_id": 'IC_kwDOH4bSvc5J1BWq',
+      "user": [Object],
+      "created_at": '2022-09-06T20:50:54Z',
+      "updated_at": '2022-09-06T20:50:54Z',
+      "author_association": 'OWNER',
+      "body": 'trigger',
+      "reactions": [Object],
+      "performed_via_github_app": null
+    },
+    {
+      "url": 'https://api.github.com/repos/richardpickett/github-dev/issues/comments/1238690493',
+      "html_url": 'https://github.com/richardpickett/github-dev/issues/1#issuecomment-1238690493',
+      "issue_url": 'https://api.github.com/repos/richardpickett/github-dev/issues/1',
+      "id": 1238690493,
+      "node_id": 'IC_kwDOH4bSvc5J1Oq9',
+      "user": [Object],
+      "created_at": '2022-09-06T21:48:21Z',
+      "updated_at": '2022-09-06T21:48:21Z',
+      "author_association": 'OWNER',
+      "body": 'another',
+      "reactions": [Object],
+      "performed_via_github_app": null
+    },]
+```
