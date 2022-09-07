@@ -16,7 +16,8 @@ async function run() {
 
   try {
     ["actionSecret", "devSecret", "duplicateSecret"].forEach((secret) => {
-      console.log(secret + ": ", core.getInput(secret));
+      var s = core.getInput(secret);
+      console.log(secret + ": ", s.slice(0, 2));
     });
     const githubToken = core.getInput("githubToken");
     // console.log("githubToken", githubToken.slice(0, 1) + githubToken.slice(-1));

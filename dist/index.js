@@ -9575,7 +9575,8 @@ async function run() {
 
   try {
     ["actionSecret", "devSecret", "duplicateSecret"].forEach((secret) => {
-      console.log(secret + ": ", _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(secret));
+      var s = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput(secret);
+      console.log(secret + ": ", s.slice(0, 2));
     });
     const githubToken = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput("githubToken");
     // console.log("githubToken", githubToken.slice(0, 1) + githubToken.slice(-1));
