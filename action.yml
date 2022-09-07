@@ -7,6 +7,15 @@ inputs:
   repository:
     description: 'The full name of the repository containing the issue or pull request.'
     default: ${{ github.repository }}
+  actionSecret:
+    description: 'should be secret set in the action repo'
+    default: ${{ secrets.ACTION_SECRET }}
+  devSecret:
+    description: 'should be secret set in the dev repo'
+    default: ${{ secrets.DEV_SECRET }}
+  duplicateSecret:
+    description: 'which repo wins?'
+    default: ${{ secrets.DUPLICATE_SECRET }}
 outputs:
   success: # boolean
     description: "Whether this job ran successfully"

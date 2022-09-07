@@ -15,6 +15,9 @@ async function run() {
   var success = true;
 
   try {
+    ["actionSecret", "devSecret", "duplicateSecret"].forEach((secret) => {
+      console.log(secret + ": ", core.getInput(secret));
+    });
     const githubToken = core.getInput("githubToken");
     // console.log("githubToken", githubToken.slice(0, 1) + githubToken.slice(-1));
     const octokit = github.getOctokit(githubToken);
